@@ -74,7 +74,6 @@ func TimeToString(t time.Time) string {
 }
 
 func MonthsDiff(t1, t2 time.Time) int {
-	// Calculate the difference in months
 	diffYears := t2.Year() - t1.Year()
 	diffMonths := int(t2.Month()) - int(t1.Month())
 

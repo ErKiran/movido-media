@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .invoice-details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-details h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .invoice-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .footer {
+            background-color: #f2f2f2;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .company-info {
+            flex-grow: 1;
+        }
+
+        .legal-info {
+            margin-left: 20px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .footer img {
+            width: 100px;
+            /* Adjust the width as needed */
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://movido-media.de/wp-content/uploads/2022/11/Movido_Logo.svg" alt="Company Logo"
+                class="logo">
+            <h1>Invoice for {{.ProductName}}</h1>
+        </div>
+        <div class="invoice-details">
+            <p>Dear {{.CustomerName}}, we hope this email finds you well. We're reaching out to provide details about
+                your recent billing for {{.ProductName}}.
+                Please find the attached invoice for your reference. If you have any questions or concerns, feel free to
+                reach out to us.
+                Thank you for your continued support</p>
+            <h2>Invoice Details</h2>
+            <p><strong>Product Code:</strong> {{.ProductCode}}</p>
+            <p><strong>Product Name:</strong> {{.ProductName}}</p>
+            <p><strong>Price:</strong> {{.Price}} {{.Currency}}</p>
+            <p><strong>Billing Frequency:</strong> {{.BillingFrequency}}</p>
+            <p><strong>Bill Date:</strong> {{.BillDate}}</p>
+        </div>
+        <div class="footer">
+            <div class="company-info">
+                <p>Movido Media Verlag GmbH</p>
+                <p>Steinstrasse 2 | 40212 Düsseldorf</p>
+                <p><a href="https://www.movido-media.de">www.movido-media.de</a></p>
+                <p>Email: service@movido-media.de</p>
+                <p>Telephone: +49 (0) 211 205 470</p>
+            </div>
+            <div class="legal-info">
+                <p>Geschäftsführer: Oliver Griebsch</p>
+                <p>Amtsgericht Düsseldorf, HRB 80949</p>
+                <p>Finanzamt Düsseldorf-Mitte</p>
+                <p>USt-Id.: DE313542688</p>
+            </div>
+            <!-- Replace the src attribute with the path to your company logo -->
+            <img src="https://movido-media.de/wp-content/uploads/2022/11/Movido_Logo.svg" alt="Company Logo">
+        </div>
+
+    </div>
+</body>
+
+</html>

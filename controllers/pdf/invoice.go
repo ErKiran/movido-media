@@ -33,16 +33,21 @@ func currencySymbol(symbol string, price float64) string {
 	return fmt.Sprintf("%s %.2f", symbol, price)
 }
 
-func (ip invoicePDF) Generate(details billing.ContractDetail) {
+func (ip invoicePDF) Generate(details billing.ContractDetail) (string, error) {
 	m := ip.NewMarto(details)
 	document, err := m.Generate()
 	if err != nil {
 		log.Fatal(err.Error())
+		return "", err
 	}
 
-	if err = document.Save("reports/new.pdf"); err != nil {
-		log.Fatal(err.Error())
+	filename := fmt.Sprintf("reports/%s.pdf", details.ProductCode)
+
+	if err = document.Save(filename); err != nil {
+		return "", err
 	}
+
+	return filename, nil
 }
 
 func (ip invoicePDF) NewMarto(details billing.ContractDetail) core.Maroto {

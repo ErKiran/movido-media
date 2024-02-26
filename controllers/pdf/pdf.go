@@ -5,7 +5,7 @@ import "movido-media/controllers/billing"
 type invoicePDF struct{}
 
 type PDFController interface {
-	Generate(billing.ContractDetail)
+	Generate(billing.ContractDetail) (string, error)
 }
 
 func NewPDFController() PDFController {

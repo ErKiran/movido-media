@@ -45,7 +45,14 @@ func main() {
 		}
 
 		for _, det := range details {
-			controller.PDFController.Generate(det)
+			path, err := controller.PDFController.Generate(det)
+			if err != nil {
+				log.Error().Msgf("unable to generate pdf %s", err)
+			}
+
+			if err := controller.EmailController.Sender(ctx, det, path); err != nil {
+				log.Error().Msgf("unable to send email to  %s", err)
+			}
 		}
 	})
 

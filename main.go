@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"movido-media/controllers"
@@ -45,7 +44,9 @@ func main() {
 			log.Error().Msgf("unable to get details of contract %s", err)
 		}
 
-		fmt.Println("Halo und Tschuss!!", details)
+		for _, det := range details {
+			controller.PDFController.Generate(det)
+		}
 	})
 
 	var wg sync.WaitGroup

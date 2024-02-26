@@ -3,7 +3,6 @@ package billing
 import (
 	"context"
 	"errors"
-	"time"
 
 	"github.com/rs/zerolog/log"
 )
@@ -17,7 +16,7 @@ type ContractDetail struct {
 	Price            float64
 	Currency         string
 	BillingFrequency int
-	BillDate         time.Time
+	BillDate         string
 }
 
 func (bc billingController) Details(ctx context.Context, data []CandidateData) ([]ContractDetail, error) {
@@ -42,16 +41,17 @@ func (bc billingController) Details(ctx context.Context, data []CandidateData) (
 	}
 
 	for _, det := range details {
+		bfreq := contractMap[det.ContractID].BillingFrequency
 		contractDetail = append(contractDetail, ContractDetail{
 			CustomerName:     det.CustomerName,
 			Email:            det.Email,
 			Address:          det.Address,
 			ProductCode:      det.ProductCode,
 			ProductName:      det.ProductName,
-			Price:            det.Price,
+			Price:            det.Price * float64(bfreq),
 			Currency:         det.Currency,
-			BillingFrequency: contractMap[det.ContractID].BillingFrequency,
-			BillDate:         contractMap[det.ContractID].CurrentBillingDate,
+			BillingFrequency: bfreq,
+			BillDate:         TimeToString(contractMap[det.ContractID].CurrentBillingDate),
 		})
 	}
 	return contractDetail, nil

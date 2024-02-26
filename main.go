@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"sync"
+	"time"
 
 	"movido-media/controllers"
 	"movido-media/repositories"
@@ -32,27 +34,51 @@ func main() {
 
 	job := cron.NewCronJob()
 
-	job.AddFunc("@every 10s", func() {
+	// run at 12 am everyday
+	job.AddFunc("0 0 * * *", func() {
 		ctx := context.Background()
-		candidates, err := controller.BillingController.SearchCanditates(ctx)
-		if err != nil {
-			log.Error().Msgf("unable to search billing controller %s", err)
-		}
-
-		details, err := controller.BillingController.Details(ctx, candidates)
-		if err != nil {
-			log.Error().Msgf("unable to get details of contract %s", err)
-		}
-
-		for _, det := range details {
-			path, err := controller.PDFController.Generate(det)
+		// Define your operation function that needs to be retried
+		operation := func() error {
+			candidates, err := controller.BillingController.SearchCanditates(ctx)
 			if err != nil {
-				log.Error().Msgf("unable to generate pdf %s", err)
+				log.Error().Msgf("unable to search billing contriller %s", err)
+				return fmt.Errorf("unable to search billing controller: %s", err)
 			}
 
-			if err := controller.EmailController.Sender(ctx, det, path); err != nil {
-				log.Error().Msgf("unable to send email to  %s", err)
+			details, err := controller.BillingController.Details(ctx, candidates)
+			if err != nil {
+				log.Error().Msgf("unable to get details of contract %s", err)
+				return fmt.Errorf("unable to get details of contract: %s", err)
 			}
+
+			res, err := controller.BillingController.ExternalBillingCall(ctx)
+			if err != nil {
+				log.Error().Msgf("mock API request failed %s", err)
+				return fmt.Errorf("mock API request failed: %s", err)
+			}
+
+			// Mock response utilization
+			if res.Type == "debit" {
+				for _, det := range details {
+					path, err := controller.PDFController.Generate(det)
+					if err != nil {
+						log.Error().Msgf("unable to generate PDF %s", err)
+						return fmt.Errorf("unable to generate PDF: %s", err)
+					}
+
+					if err := controller.EmailController.Sender(ctx, det, path); err != nil {
+						log.Error().Msgf("unable to send email %s", err)
+						return fmt.Errorf("unable to send email: %s", err)
+					}
+				}
+			}
+
+			return nil
+		}
+
+		// Call retry function with backoff strategy
+		if err := retryWithBackoff(5, time.Second*300, operation); err != nil {
+			log.Error().Msgf("operation failed after retries: %s", err)
 		}
 	})
 
@@ -64,4 +90,19 @@ func main() {
 	wg.Wait()
 
 	defer utils.Recover()
+}
+
+func retryWithBackoff(maxRetries int, initialDelay time.Duration, operation func() error) error {
+	delay := initialDelay
+	for i := 0; i < maxRetries; i++ {
+		if err := operation(); err == nil {
+			return nil
+		}
+
+		fmt.Printf("Operation failed. Retrying in %s...\n", delay)
+		time.Sleep(delay)
+		delay *= 2
+	}
+
+	return fmt.Errorf("operation failed after %d retries", maxRetries)
 }

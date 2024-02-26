@@ -43,6 +43,8 @@ func (ip invoicePDF) Generate(details billing.ContractDetail) (string, error) {
 
 	filename := fmt.Sprintf("reports/%s.pdf", details.ProductCode)
 
+	// we can save it to cloud and update the database with the url path
+	// skipping it for simplicity and storing in a disc instead
 	if err = document.Save(filename); err != nil {
 		return "", err
 	}

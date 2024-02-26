@@ -8,6 +8,7 @@ import (
 
 type BillingRepo interface {
 	SearchContracts(ctx context.Context) ([]Contract, error)
+	GetContractsDetail(ctx context.Context, ids []string) ([]ContractDetails, error)
 }
 
 type billingRepo struct {
